@@ -88,10 +88,6 @@ export default {
   components: {
     TitleBar
   },
-  created () {
-    const { process } = this.$electron.remote
-    console.log(process)
-  },
   methods: {
     turnToHome () {
       this.$router.push('/home')
