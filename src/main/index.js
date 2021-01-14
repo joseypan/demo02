@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow, Menu, dialog, ipcMain, Tray } from 'electron'
+import { app, BrowserWindow, Menu, dialog, ipcMain, Tray, session } from 'electron'
 const path = require('path')
 // const fs = require('fs')
 app.disableHardwareAcceleration()
@@ -31,7 +31,8 @@ function createWindow () {
     useContentSize: true,
     width: 1000,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      webSecurity: false
     },
     center: true,
     frame: false,
@@ -201,6 +202,37 @@ ipcMain.on('openChildWin', (e, arg) => {
   userInfoWin.on('blur', () => {
     userInfoWin.close()
   })
+})
+ipcMain.on('downloadFile', (e, arg) => {
+  // 触发下载
+  mainWindow.webContents.downloadURL(arg.blobPath)
+  // 监听 will-download
+  session.defaultSession.on('will-download', (event, item, webContents) => {
+    // item.setSavePath(arg.filePath)
+    item.on('updated', (event, state) => {
+      console.log('下载中')
+      if (state === 'interrupted') {
+        console.log('Download is interrupted but can be resumed')
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          console.log('Download is paused')
+        } else {
+          console.log(`Received bytes: ${item.getReceivedBytes()}`)
+        }
+      }
+    })
+    item.once('done', (event, state) => {
+      if (state === 'completed') {
+        console.log('Download successfully')
+      } else {
+        console.log(`Download failed: ${state}`)
+      }
+    })
+  })
+})
+ipcMain.on('downloadFiles', (e, arg) => {
+  const fs = require('fs')
+  fs.write()
 })
 /**
  * Auto Updater

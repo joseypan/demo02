@@ -57,6 +57,8 @@
               只能上传jpg/png文件，且不超过500kb
             </div>
           </el-upload>
+          <el-button @click="downloadFile">下载文件</el-button>
+          <el-button @click="downloadFiles">下载文件2</el-button>
         </el-main>
       </el-container>
     </el-container>
@@ -127,6 +129,92 @@ export default {
           positionY: e.screenY - e.clientY
         }
       })
+    },
+    downloadFile () {
+      // 获取用户选择的下载路径
+      const { ipcRenderer } = this.$electron
+      const { dialog } = this.$electron.remote
+      let res = dialog.showOpenDialog({
+        title: '请选择下载地址',
+        properties: ['openFile', 'openDirectory'],
+        buttonLabel: '确定地址'
+      })
+      // 将用户的选择的下载地址传给主线程
+      ipcRenderer.send('downloadFile', res)
+    },
+    downloadFiles () {
+      // 弹出dialog保存框，让用户选择
+      const { dialog } = this.$electron.remote
+      // const { ipcRenderer } = this.$electron
+      // 获取到了文件地址和文件名
+      let res = dialog.showSaveDialog({
+        // 可以设置默认的文件名
+        defaultPath: 'test.png'
+      })
+      console.log(res)
+      // 发送axios请求获取文件流
+      this.$http
+        .post(
+          'http://39.107.139.53:2000/api/FileInfo/DownLoad/4e59c30f-a746-411c-892f-0ed67290ce06',
+          {
+            headers: {
+              responseType: 'Blob'
+            }
+          }
+        )
+        .then(result => {
+          // 获取到数据流
+          let { data } = result
+          console.log(result)
+          const blob = new Blob([data])
+          // let fileName = res
+          // if ('download' in document.createElement('a')) {
+          //   // 非IE下载
+          //   const elink = document.createElement('a')
+          //   elink.download = fileName
+          //   elink.style.display = 'none'
+          //   elink.href = URL.createObjectURL(blob)
+          //   document.body.appendChild(elink)
+          //   elink.click()
+          //   URL.revokeObjectURL(elink.href) // 释放URL 对象
+          //   document.body.removeChild(elink)
+          // } else {
+          //   // IE10+下载
+          //   navigator.msSaveBlob(blob, fileName)
+          // }
+          // 将数据流转成arraybuffer
+          this.fileReader(blob).then(data => {
+            this.writeData(res, data)
+          })
+        })
+    },
+    fileReader (file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsArrayBuffer(file)
+        reader.onload = e => {
+          resolve(e.target.result)
+        }
+      })
+    },
+    // 将blob写入文件内
+    writeData (filePath, fileData) {
+      // 将获取到的arraybuffer转成Dataview写入文件中
+      const fs = require('fs')
+      let bufferData = this.toBuffer(fileData)
+      console.log(bufferData)
+      fs.writeFile(filePath, bufferData, 'buffer', res => {
+        console.log(res)
+      })
+    },
+    // 将arraybuffer转成buffer
+    toBuffer (ab) {
+      let buf = Buffer.from(ab)
+      let view = new Uint8Array(ab)
+      for (var i = 0; i < buf.length; ++i) {
+        buf[i] = view[i]
+      }
+      return buf
     }
     // uploadFile (file) {
     //   console.log (file)

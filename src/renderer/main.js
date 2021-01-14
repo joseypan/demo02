@@ -18,6 +18,16 @@ Vue.theme = Vue.prototype.$theme = theme
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
+// // 设置axios拦截器
+axios.interceptors.request.use(
+  function (config) {
+    config.headers.token = 'aec90e52-bd22-4e5e-a431-8df322f7d13b'
+    return config
+  },
+  function (error) {
+    console.log(error)
+  }
+)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
