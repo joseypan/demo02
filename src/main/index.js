@@ -1,6 +1,14 @@
 'use strict'
 
-import { app, BrowserWindow, Menu, dialog, ipcMain, Tray, session } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  Menu,
+  dialog,
+  ipcMain,
+  Tray,
+  session
+} from 'electron'
 const path = require('path')
 // const fs = require('fs')
 app.disableHardwareAcceleration()
@@ -230,9 +238,14 @@ ipcMain.on('downloadFile', (e, arg) => {
     })
   })
 })
-ipcMain.on('downloadFiles', (e, arg) => {
-  const fs = require('fs')
-  fs.write()
+ipcMain.on('processBar', (e, arg) => {
+  console.log(arg)
+  if (arg === 1) {
+    mainWindow.setProgressBar(-1)
+    mainWindow.flashFrame(true)
+    return
+  }
+  mainWindow.setProgressBar(arg)
 })
 /**
  * Auto Updater

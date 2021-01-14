@@ -58,7 +58,7 @@
             </div>
           </el-upload>
           <el-button @click="downloadFile">下载文件</el-button>
-          <el-button @click="downloadFiles">下载文件2</el-button>
+          <el-button @click="downloadTest">下载文件2</el-button>
         </el-main>
       </el-container>
     </el-container>
@@ -215,6 +215,43 @@ export default {
         buf[i] = view[i]
       }
       return buf
+    },
+    downloadTest () {
+      const { dialog } = this.$electron.remote
+      const request = require('request')
+      const fs = require('fs')
+      // const { ipcRenderer } = this.$electron
+      // 获取到了文件地址和文件名
+      let targetPath = dialog.showSaveDialog({
+        // 可以设置默认的文件名
+        defaultPath: 'test.png'
+      })
+      var receivedBytes = 0
+      var totalBytes = 0
+      var req = request({
+        method: 'GET',
+        url: 'http://192.168.18.160:8080/file/download/abc.pdf'
+      })
+      var out = fs.createWriteStream(targetPath)
+      req.pipe(out)
+      req.on('response', function (data) {
+        // Change the total bytes value to get progress later.
+        console.log(data)
+        totalBytes = parseInt(data.headers['content-length'])
+      })
+      req.on('data', (chunk) => {
+        // Update the received bytes
+        receivedBytes += chunk.length
+        this.showProgress(receivedBytes, totalBytes)
+      })
+      req.on('end', function () {
+        alert('File succesfully downloaded')
+      })
+    },
+    showProgress (received, total) {
+      const { ipcRenderer } = this.$electron
+      var percentage = received / total
+      ipcRenderer.send('processBar', percentage)
     }
     // uploadFile (file) {
     //   console.log (file)
