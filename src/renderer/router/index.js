@@ -21,6 +21,12 @@ export default new Router({
       name: 'UserInfo',
       component: () =>
       import(/* webpackChunkName: "about" */ '../views/UserInfo.vue')
+    },
+    {
+      path: '/previewFile',
+      name: 'PreviewFile',
+      component: () =>
+      import(/* webpackChunkName: "about" */ '../views/PreviewFile.vue')
     }
   ]
 })

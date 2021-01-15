@@ -21,7 +21,7 @@ Vue.http = Vue.prototype.$http = axios
 // // 设置axios拦截器
 axios.interceptors.request.use(
   function (config) {
-    config.headers.token = '96d8a4e4-42d8-4620-903b-fb72ce1bc2b8'
+    config.headers.token = 'aa55a923-3441-46ce-ae1c-d86ddc0ab5b1'
     return config
   },
   function (error) {

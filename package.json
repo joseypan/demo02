@@ -49,7 +49,7 @@
       }
     },
     "win": {
-      "icon": "build/icons/icon.ico",
+      "icon": "build/icons/happy.ico",
       "target": "nsis"
     },
     "nsis": {

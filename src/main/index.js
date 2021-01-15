@@ -22,7 +22,16 @@ if (process.env.NODE_ENV !== 'development') {
     .join(__dirname, '/static')
     .replace(/\\/g, '\\\\')
 }
-
+app.setUserTasks([
+  {
+    program: process.execPath,
+    arguments: '--new-window',
+    iconPath: process.execPath,
+    iconIndex: 0,
+    title: 'New Window',
+    description: 'Create a new window'
+  }
+])
 let mainWindow
 let tray
 const winURL =
@@ -201,7 +210,7 @@ ipcMain.on('openChildWin', (e, arg) => {
   const winURL =
     process.env.NODE_ENV === 'development'
       ? `http://localhost:9080/#${arg.path}`
-      : `file://${__dirname}/index.html/#${arg.path}`
+      : `file://${__dirname}/index.html#${arg.path}`
   userInfoWin.webContents.closeDevTools()
   userInfoWin.loadURL(winURL)
   userInfoWin.once('ready-to-show', () => {
@@ -246,6 +255,21 @@ ipcMain.on('processBar', (e, arg) => {
     return
   }
   mainWindow.setProgressBar(arg)
+})
+ipcMain.on('previewFile', (e, arg) => {
+  const previewWin = new BrowserWindow({
+    frame: true,
+    titleBarStyle: 'hidden',
+    parent: mainWindow,
+    show: true
+  })
+  // const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080/#${arg.path}` : `file://${__dirname}/index.html/#${arg.path}`
+  const winURL = 'http://39.107.139.53:2000/wwwroot/SaveOfficeFile/497cc4ed-3e9b-4e5b-bf23-eb2106aee448.txt'
+  previewWin.webContents.closeDevTools()
+  previewWin.loadURL(winURL)
+  // previewWin.once('ready-to-show', () => {
+  //   previewWin.show()
+  // })
 })
 /**
  * Auto Updater
