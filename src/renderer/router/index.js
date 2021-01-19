@@ -14,19 +14,25 @@ export default new Router({
       path: '/home',
       name: 'Home',
       component: () =>
-      import(/* webpackChunkName: "about" */ '../views/Home.vue')
+        import(/* webpackChunkName: "about" */ '../views/Home.vue')
     },
     {
       path: '/userInfo',
       name: 'UserInfo',
       component: () =>
-      import(/* webpackChunkName: "about" */ '../views/UserInfo.vue')
+        import(/* webpackChunkName: "about" */ '../views/UserInfo.vue')
     },
     {
       path: '/previewFile',
       name: 'PreviewFile',
       component: () =>
-      import(/* webpackChunkName: "about" */ '../views/PreviewFile.vue')
+        import(/* webpackChunkName: "about" */ '../views/PreviewFile.vue')
+    },
+    {
+      path: '/file',
+      name: 'File',
+      component: () =>
+        import(/* webpackChunkName: "about" */ '../views/File.vue')
     }
   ]
 })

@@ -59,6 +59,7 @@
           </el-upload>
           <el-button @click="downloadTest">下载文件</el-button>
           <el-button @click="previewFile">文件预览</el-button>
+          <el-button @click="toFile">跳转文件页面</el-button>
         </el-main>
       </el-container>
     </el-container>
@@ -161,6 +162,9 @@ export default {
         path: '/previewFile',
         filePath: previewPath
       })
+    },
+    toFile () {
+      this.$router.push('/file')
     }
   }
 }
