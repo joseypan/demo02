@@ -57,7 +57,7 @@
               只能上传jpg/png文件，且不超过500kb
             </div>
           </el-upload>
-          <el-button @click="downloadTest">下载文件</el-button>
+          <el-button @click="downloadFile">下载文件</el-button>
           <el-button @click="previewFile">文件预览</el-button>
           <el-button @click="toFile">跳转文件页面</el-button>
         </el-main>
@@ -123,7 +123,8 @@ export default {
       var totalBytes = 0
       var req = request({
         method: 'POST',
-        url: 'http://39.107.139.53:2000/api/FileInfo/Preview/79b0f8e2-dd5c-4bab-97e0-885a248524ef',
+        url:
+          'http://39.107.139.53:2000/api/FileInfo/Preview/79b0f8e2-dd5c-4bab-97e0-885a248524ef',
         headers: {
           token: 'e6402d8b-c014-498e-ac34-6f74a786ce65'
         }
@@ -138,7 +139,7 @@ export default {
         // Change the total bytes value to get progress later.
         // totalBytes = parseInt(data.headers['content-length'])
       })
-      req.on('data', (chunk) => {
+      req.on('data', chunk => {
         // Update the received bytes
         receivedBytes += chunk.length
         this.showProgress(receivedBytes, totalBytes)
@@ -146,6 +147,36 @@ export default {
       req.on('end', function () {
         alert('File succesfully downloaded')
       })
+    },
+    async downloadFile () {
+      const fs = require('fs')
+      const { dialog } = this.$electron.remote
+      let targetPath = dialog.showSaveDialog({
+        // 可以设置默认的文件名
+        defaultPath: 'test23.xlsx'
+      })
+      // 检查文件是否可写。
+      fs.access(targetPath, fs.constants.W_OK, err => {
+        console.log(`${targetPath} ${err ? '不可写' : '可写'}`)
+      })
+      let res = await this.$http.get(
+        'http://192.168.18.160:8080/rest/file/download/helloword.xlsx',
+        {
+          responseType: 'arraybuffer',
+          onDownloadProgress: progressEvent => {
+            console.log('进度事件', progressEvent)
+          }
+        }
+      )
+      const buffer = Buffer.from(res.data)
+      fs.writeFile(targetPath, buffer, err => {
+        if (err) {
+          console.log('错误', err)
+        } else {
+          console.log('文件已经保存')
+        }
+      })
+      console.log('下载文件结果', typeof res.data)
     },
     showProgress (received, total) {
       console.log(received, total)

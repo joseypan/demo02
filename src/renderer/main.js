@@ -7,11 +7,14 @@ import store from './store'
 // 引入element-ui
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import qs from 'qs'
+import { theme, themeSetup } from './assets/css/theme/index.js'
+Vue.prototype.$qs = qs
 // 引入主题
 /** ------------------------------
                 主题
  -------------------------------- */
-import { theme, themeSetup } from './assets/css/theme/index.js'
+
 Vue.use(ElementUI)
 Vue.themeSetup = Vue.prototype.$themeSetup = themeSetup
 Vue.theme = Vue.prototype.$theme = theme
